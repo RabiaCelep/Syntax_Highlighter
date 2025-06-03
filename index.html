@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Syntax Highlighter</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #222; color: white; }
+    textarea { width: 100%; height: 150px; font-family: monospace; font-size: 16px; background: #333; color: white; border: none; padding: 10px; }
+    pre { white-space: pre-wrap; background: #111; padding: 10px; border-radius: 5px; }
+    .keyword { color: #00ffff; }
+    .identifier { color: #ffffff; }
+    .number { color: #ffcc00; }
+    .operator { color: #ff6666; }
+    .punctuation { color: #999999; }
+    .comment { color: #888888; font-style: italic; }
+    .string { color: #ffa07a; }
+
+  </style>
+</head>
+<body>
+
+  <h1>Real-Time JavaScript Syntax Highlighter</h1>
+  <textarea id="codeInput" placeholder="JavaScript kodunuzu buraya yazın..."></textarea>
+  <h2>Highlight Edilmiş Hali:</h2>
+  <pre id="highlightedCode"></pre>
+
+   <script src="tokenizer.js"></script>
+  <script>
+    const codeInput = document.getElementById("codeInput");
+    const highlightedCode = document.getElementById("highlightedCode");
+
+    function escapeHTML(str) {
+      return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+    }
+
+    function renderHighlighted(code) {
+      const tokens = tokenize(code);
+      return tokens.map(token => {
+        const val = escapeHTML(token.value);
+        return `<span class="${token.type}">${val}</span>`;
+      }).join("");
+    }
+
+    codeInput.addEventListener("input", () => {
+      const code = codeInput.value;
+      const tokens = tokenize(code);
+      const highlighted = tokens.map(token => {
+        const val = escapeHTML(token.value);
+        return `<span class="${token.type}">${val}</span>`;
+      }).join("");
+
+      highlightedCode.innerHTML = highlighted;
+
+      // Parse ve hataları göster
+      const errors = parse(tokens);
+      if (errors.length > 0) {
+        const errorMessages = errors.map(err =>
+          `<div style="color:red">[Syntax Error] ${err.message} → "${err.token?.value}"</div>`
+        ).join("");
+        highlightedCode.innerHTML += `<br>${errorMessages}`;
+      }
+    });
+  </script>
+
+  <script src="parser.js"></script>
+</body>
+</html>
