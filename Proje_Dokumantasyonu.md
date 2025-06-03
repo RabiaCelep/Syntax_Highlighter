@@ -20,7 +20,7 @@ Top-down parsing yaklaşımı benimsenmiştir. Bu yaklaşım, gramerin kolay oku
 
 # 2. Sözdizim Analizi Süreci
 
-## 2.1 Lexical Analyzer (Tokenizer)
+## 2.1 Lexical Analyzer (Tokenizer)- State Diagram & Program Implementation
 
 Tokenizer, kullanıcıdan alınan kodu aşağıdaki gruplara ayırır:
 
@@ -106,3 +106,4 @@ Kod vurgulama stilleri CSS ile tanımlanmıştır:
 # 6. Sonuç
 
 Bu projede, kullanıcı dostu ve gerçek zamanlı bir sözdizimi vurgulayıcı geliştirildi. JavaScript ile yazılan bu uygulama, dil tanıma, token üretme ve gramer kontrolü adımlarını modüler şekilde gerçekleştiriyor. Kullanıcı arayüzü, kolay kullanım ve görsel vurgularla öğrenmeyi destekliyor.
+
