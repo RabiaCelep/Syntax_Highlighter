@@ -1,123 +1,108 @@
-JavaScript Gerçek Zamanlı Sözdizimi Vurgulayıcı
-📌 Dil ve Gramer Seçimi
-Kullanılan Programlama Dili
-Bu projede JavaScript dilinin basitleştirilmiş bir alt kümesi kullanılmaktadır. JavaScript tercih edilmesinin nedenleri:
+# 1. Dil ve Gramer Seçimi
 
-Hem istemci (frontend) hem de sunucu (backend) tarafında yaygın olarak kullanılır.
+## 1.1 Kullanılan Programlama Dili
 
-Projede kullanılan GUI ve sözdizimi analiz araçları da JavaScript ile yazıldığı için, analiz edilen dil ile analiz aracı arasında tutarlılık sağlanır.
+Projede JavaScript kullanılmıştır. JavaScript, hem istemci tarafında çalışabilen hem de geniş topluluk desteği olan bir dil olduğu için tercih edilmiştir. Tarayıcı üzerinde doğrudan çalışabilmesi sayesinde kullanıcı herhangi bir kurulum yapmadan sözdizimi vurgulayıcıyı deneyimleyebilir.
 
-Desteklenen Yapılar
-Aşağıdaki temel yapılar desteklenmektedir:
+## 1.2 Desteklenen Yapılar
 
-let ile değişken tanımlama
+* **Değişken tanımlama:** `let`, `const`, `var`
+* **Yazdırma:** `print()` fonksiyonu
+* **Koşullu ifadeler:** `if`, `else`
+* **Karakter dizileri ve sayılar**
+* **Operatörler:** `+`, `-`, `*`, `/`, `=`, `==`, `!=`, `<`, `>` vb.
 
-print() fonksiyonu
+## 1.3 Kullanılan Gramer
 
-if / else koşullu yapılar
+Top-down parsing yaklaşımı benimsenmiştir. Bu yaklaşım, gramerin kolay okunabilir ve manuel olarak uygulanabilir olmasını sağlar. Kodun yapısı parça parça incelenerek parse edilir.
 
-Temel veri türleri: number, string, identifier
+---
 
-Kullanılan Gramer (Bağlamdan Bağımsız)
-mathematica
-Kopyala
-Düzenle
-Program     → Statement*
-Statement   → VarDecl | PrintStmt | IfStmt
-VarDecl     → "let" identifier "=" Expression ";"
-PrintStmt   → "print" "(" Expression ")" ";"
-IfStmt      → "if" "(" Expression ")" Block ["else" Block]
-Block       → "{" Statement* "}"
-Expression  → identifier | number | string
-🔍 Sözdizim Analizi Süreci
-1. Lexical Analyzer (Tokenizer)
-Kod parçaları, tokenize() fonksiyonu ile analiz edilir. Kullanılan regex:
+# 2. Sözdizim Analizi Süreci
 
-js
-Kopyala
-Düzenle
+## 2.1 Lexical Analyzer (Tokenizer)
+
+Tokenizer, kullanıcıdan alınan kodu aşağıdaki gruplara ayırır:
+
+* **Anahtar kelimeler:** `let`, `if`, `else`, `print`
+* **Tanımlayıcılar:** değişken isimleri
+* **Operatörler:** `=`, `+`, `-`, vb.
+* **Sayısal değerler**
+* **Semboller:** `(`, `)`, `{`, `}`, `;`
+
+Kod örneği:
+
+```javascript
 const regex = /\s+|\/\/.*|".*?"|'.*?'|\d+|[a-zA-Z_$][\w$]*|==|!=|<=|>=|=>|[=+\-*/<>!&|;,.{}()[\]]/g;
-Tanınan Token Türleri
-Tür	Açıklama
-keyword	let, if, else, print
-identifier	Değişken/fonksiyon adları
-number	Sayısal değerler
-string	"..." veya '...'
-operator	+, =, >, == vb.
-punctuation	;, (, ), {, } vb.
-comment	// ile başlayan yorum satırları
+```
 
-2. Syntax Analyzer (Parser)
-Top-down yaklaşımıyla çalışan parser, aşağıdaki fonksiyonlarla tanımlanır:
+## 2.2 Syntax Analyzer (Parser)
 
-Fonksiyon	Açıklama
-parseProgram()	Tüm programı işler, parseStatement() çağırır.
-parseStatement()	Gelen token'a göre uygun analiz fonksiyonunu seçer.
-parseVarDecl()	let tanımlarını analiz eder.
-parsePrint()	print() ifadelerini işler.
-parseIf()	if/else bloklarını işler.
-parseExpression()	Temel ifadeleri çözümler.
+Parser, token'ları gramer kurallarına göre analiz eder ve geçerli yapıların olup olmadığını kontrol eder.
 
-Parser Neden Top-Down?
-Öğrenci projeleri için okunabilir ve kolay hata ayıklanabilir.
+Top-down yaklaşımıyla çalışan `parseStatement`, `parseVarDecl`, `parsePrint`, `parseIf` gibi fonksiyonlarla gramer kontrolü yapılır.
 
-Küçük gramerler için idealdir.
+---
 
-parseX() fonksiyonları ile gramer kuralları birebir eşleştirilebilir.
+# 3. Token Tanımları
 
-🧱 Tokenization ve Highlighting
-Gerçek Zamanlı Vurgulama
-Kullanıcı kod yazdıkça tokenize() çalışır.
+## 3.1 Token Türleri
 
-Her token, uygun CSS sınıfıyla <span class="tokenType">...</span> etiketine dönüştürülür.
+| Token Türü    | Açıklama               |
+| ------------- | ---------------------- |
+| `keyword`     | Anahtar kelimeler      |
+| `identifier`  | Değişken adları        |
+| `number`      | Sayısal sabitler       |
+| `string`      | Karakter dizileri      |
+| `operator`    | +, -, \*, /, = vb.     |
+| `punctuation` | Noktalama karakterleri |
+| `comment`     | Açıklama satırları     |
 
-highlightedCode adlı <pre> bloğunda gösterilir.
+## 3.2 Tokenizer Kullanımı
 
-Aynı anda parse() fonksiyonu ile sözdizim hataları kontrol edilir.
+Tokenizer çıktısı bir dizi token nesnesidir. Her biri şu alanları içerir:
 
-CSS Vurgulama Stilleri
-css
-Kopyala
-Düzenle
+* `type`: Token türü
+* `value`: Orijinal kaynak kod parçası
+
+---
+
+# 4. Parser Fonksiyonları
+
+## 4.1 Top-Down Yöntemi
+
+Parser, yukarıdan aşağıya çalışır. Yani önce genel yapı (örneğin bir ifade veya blok) tanımlanır, sonra alt bileşenlere ayrılır.
+
+## 4.2 Fonksiyon Açıklamaları
+
+* **parseVarDecl()**: `let x = 5;` gibi tanımları işler.
+* **parsePrint()**: `print("Hello");` gibi satırları işler.
+* **parseIf()**: `if (...) { ... }` yapısını ve varsa `else` kısmını işler.
+* **parseStatement()**: Yukarıdaki fonksiyonları çağırarak genel yapıyı kontrol eder.
+
+---
+
+# 5. GUI ve Gerçek Zamanlı Vurgulama
+
+## 5.1 Kullanıcı Arayüzü
+
+Kullanıcı, bir metin kutusuna kodunu yazar. Kod yazıldıkça `tokenizer.js` dosyası ile analiz yapılır ve `highlightCode()` fonksiyonu ile vurgulama yapılır.
+
+## 5.2 CSS Stil Tanımları
+
+Kod vurgulama stilleri CSS ile tanımlanmıştır:
+
+```css
 .keyword     { color: #00ffff; }
 .identifier  { color: #ffffff; }
-.number      { color: #ffcc00; }
-.operator    { color: #ff6666; }
-.punctuation { color: #999999; }
+.operator    { color: #ff00ff; }
+.number      { color: #ffff00; }
+.string      { color: #00ff00; }
 .comment     { color: #888888; font-style: italic; }
-.string      { color: #ffa07a; }
-🖥️ Arayüz (GUI) Detayları
-Kullanılan Teknolojiler
-HTML5: Sayfa yapısı
+```
 
-CSS: Stil ve tema
+---
 
-JavaScript: Tokenizer ve parser
+# 6. Sonuç
 
-Temel Elemanlar
-Eleman	Açıklama
-<textarea>	Kod yazılan alan
-<pre id="highlightedCode">	Renklendirilmiş çıktının gösterildiği alan
-<script> etiketleri	Tokenizer ve parser JS dosyaları dahil edilmiştir.
-
-Stil (CSS)
-css
-Kopyala
-Düzenle
-body {
-  font-family: monospace;
-  background: #222;
-  color: white;
-}
-textarea {
-  background: #333;
-  color: white;
-  border: none;
-}
-pre {
-  background: #111;
-  border-radius: 5px;
-  padding: 10px;
-}
-✅ Sonuç
-Bu proje, kullanıcıya yazdığı kodun anında analizini ve görsel olarak vurgulanmasını sağlayan bir sistem sunar. Hem eğitim amaçlı hem de geliştiriciler için faydalı bir araç olarak tasarlanmıştır. Her kod değişikliğinde hem sözcüksel analiz hem de sözdizim kontrolü yapılır ve kullanıcıya hatalar anında gösterilir.
+Bu projede, kullanıcı dostu ve gerçek zamanlı bir sözdizimi vurgulayıcı geliştirildi. JavaScript ile yazılan bu uygulama, dil tanıma, token üretme ve gramer kontrolü adımlarını modüler şekilde gerçekleştiriyor. Kullanıcı arayüzü, kolay kullanım ve görsel vurgularla öğrenmeyi destekliyor.
