@@ -1,4 +1,4 @@
-# Gerçek Zamanlı JavaScript Sözdizimi Vurgulayıcı
+# Gerçek Zamanlı JavaScript Sözdizimi Vurgulayıcı(Makale)
 
 ## 📌 Giriş
 
